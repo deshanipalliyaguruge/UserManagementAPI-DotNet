@@ -57,7 +57,7 @@ namespace UserManagementAPI.Controllers
             var existingUser = await service.GetUserById(id);
             if (existingUser == null)
             {
-                return NotFound();  // Return 404 if user does not exist
+                return NotFound();  
             }
             await service.DeleteUser(id);
             return NoContent();
