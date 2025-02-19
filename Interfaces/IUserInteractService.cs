@@ -5,7 +5,7 @@ namespace UserManagementAPI.Services
 {
     public interface IUserInteractService
     {
-        Task<ResponseResult> CreateUser(User user);
-        Task<ResponseResult> DeleteUser(int id);
+        Task<ResponseResult<object>> CreateUser(User user);
+        Task<ResponseResult<object>> DeleteUser(int id);
     }
 }

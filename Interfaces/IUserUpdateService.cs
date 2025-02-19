@@ -5,6 +5,6 @@ namespace UserManagementAPI.Services
 {
     public interface IUserUpdateService
     {
-        Task<ResponseResult> UpdateUser(int id, User user);
+        Task<ResponseResult<object>> UpdateUser(int id, User user);
     }
 }

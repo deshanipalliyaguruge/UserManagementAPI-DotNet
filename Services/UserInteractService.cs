@@ -15,7 +15,7 @@ namespace UserManagementAPI.Services
             this.connectionString = configuration.GetConnectionString("DefaultConnection");
         }
 
-        public async Task<ResponseResult> CreateUser(User user)
+        public async Task<ResponseResult<object>> CreateUser(User user)
         {
             try
             {
@@ -32,21 +32,21 @@ namespace UserManagementAPI.Services
 
                         await connection.OpenAsync();
                         await command.ExecuteNonQueryAsync();
-                        return new ResponseResult(true, "User created successfully.");
+                        return new ResponseResult<object>(true, "User created successfully.");
                     }
                 }
             }
             catch (SqlException ex)
             {
-                return new ResponseResult(false, $"Database error: {ex.Message}");
+                return new ResponseResult<object>(false, $"Database error: {ex.Message}");
             }
             catch (Exception ex)
             {
-                return new ResponseResult(false, $"An error occurred: {ex.Message}");
+                return new ResponseResult<object>(false, $"An error occurred: {ex.Message}");
             }
         }
 
-        public async Task<ResponseResult> DeleteUser(int id)
+        public async Task<ResponseResult<object>> DeleteUser(int id)
         {
             try
             {
@@ -61,19 +61,19 @@ namespace UserManagementAPI.Services
                         int rowsAffected = await command.ExecuteNonQueryAsync();
 
                         if (rowsAffected > 0)
-                            return new ResponseResult(true, "User deleted successfully.");
+                            return new ResponseResult<object>(true, "User deleted successfully.");
                         else
-                            return new ResponseResult(false, "User not found.");
+                            return new ResponseResult<object>(false, "User not found.");
                     }
                 }
             }
             catch (SqlException ex)
             {
-                return new ResponseResult(false, $"Database error: {ex.Message}");
+                return new ResponseResult<object>(false, $"Database error: {ex.Message}");
             }
             catch (Exception ex)
             {
-                return new ResponseResult(false, $"An error occurred: {ex.Message}");
+                return new ResponseResult<object>(false, $"An error occurred: {ex.Message}");
             }
         }
     }
