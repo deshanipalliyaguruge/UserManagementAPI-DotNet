@@ -16,7 +16,7 @@ namespace UserManagementAPI.Services
             this.connectionString = configuration.GetConnectionString("DefaultConnection");
         }
 
-        public async Task<UserResponse<List<User>>> GetAllUsers()
+        public async Task<ResponseResult<List<User>>> GetAllUsers()
         {
             var users = new List<User>();
 
@@ -44,15 +44,15 @@ namespace UserManagementAPI.Services
                         }
                     }
                 }
-                return new UserResponse<List<User>>(true, "Users retrieved successfully.", users);
+                return new ResponseResult<List<User>>(true, "Users retrieved successfully.", users);
             }
             catch (Exception ex)
             {
-                return new UserResponse<List<User>>(false, $"Error retrieving users: {ex.Message}", null);
+                return new ResponseResult<List<User>>(false, $"Error retrieving users: {ex.Message}", null);
             }
         }
 
-        public async Task<UserResponse<User>> GetUserById(int id)
+        public async Task<ResponseResult<User>> GetUserById(int id)
         {
             User user = null;
 
@@ -82,13 +82,13 @@ namespace UserManagementAPI.Services
                     }
                 }
                 if (user != null)
-                    return new UserResponse<User>(true, "User found.", user);
+                    return new ResponseResult<User>(true, "User found.", user);
                 else
-                    return new UserResponse<User>(false, "User not found.", null);
+                    return new ResponseResult<User>(false, "User not found.", null);
             }
             catch (Exception ex)
             {
-                return new UserResponse<User>(false, $"Error retrieving user: {ex.Message}", null);
+                return new ResponseResult<User>(false, $"Error retrieving user: {ex.Message}", null);
             }
         }
     }
