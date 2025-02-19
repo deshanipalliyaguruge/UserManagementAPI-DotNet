@@ -3,6 +3,7 @@ using System.Data;
 using System.Threading.Tasks;
 using Microsoft.Data.SqlClient;
 using UserManagementAPI.Models;
+using UserManagementAPI.Models.UserModels;
 
 namespace UserManagementAPI.Services
 {

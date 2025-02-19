@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
-using UserManagementAPI.Models;
+using UserManagementAPI.Models.UserModels;
 using UserManagementAPI.Services;
 
 namespace UserManagementAPI.Controllers

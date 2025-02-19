@@ -1,5 +1,6 @@
 ﻿using System.Threading.Tasks;
 using UserManagementAPI.Models;
+using UserManagementAPI.Models.UserModels;
 
 namespace UserManagementAPI.Services
 {
