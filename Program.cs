@@ -1,5 +1,4 @@
 using Microsoft.Data.SqlClient;
-using UserManagementAPI.Repositories;
 using UserManagementAPI.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -11,12 +10,10 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-// Configure database connection
-builder.Services.AddScoped<SqlConnection>(sp =>
-    new SqlConnection(builder.Configuration.GetConnectionString("DefaultConnection")));
-
-builder.Services.AddScoped<UserRepository>();
-builder.Services.AddScoped<UserService>();
+builder.Services.AddSingleton<IConfiguration>(builder.Configuration);
+builder.Services.AddScoped<IUserInteractService, UserInteractService>();
+builder.Services.AddScoped<IUserUpdateService, UserUpdateService>();
+builder.Services.AddScoped<IUserService, UserService>();
 
 var app = builder.Build();
 

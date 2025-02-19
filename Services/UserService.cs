@@ -1,78 +1,95 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Data;
 using System.Threading.Tasks;
-using UserManagementAPI.DTOs;
+using Microsoft.Data.SqlClient;
 using UserManagementAPI.Models;
-using UserManagementAPI.Repositories;
 
 namespace UserManagementAPI.Services
 {
-    public class UserService
+    public class UserService : IUserService
     {
-        private readonly UserRepository repository;
+        private readonly string connectionString;
 
-        public UserService(UserRepository repository)
+        public UserService(IConfiguration configuration)
         {
-            this.repository = repository;
+            this.connectionString = configuration.GetConnectionString("DefaultConnection");
         }
 
-        public async Task<List<UserDto>> GetAllUsers()
+        public async Task<UserResponse<List<User>>> GetAllUsers()
         {
-            var users = await repository.GetAllUsers();
-            return users.ConvertAll(user => new UserDto
+            var users = new List<User>();
+
+            try
             {
-                Id = user.Id,
-                Name = user.Name,
-                Email = user.Email,
-                Age = user.Age,
-                Gender = user.Gender,
-                ContactNumber = user.ContactNumber
-            });
-        }
+                using (var connection = new SqlConnection(connectionString))
+                using (var command = new SqlCommand("GetAllUsers", connection))
+                {
+                    command.CommandType = CommandType.StoredProcedure;
+                    await connection.OpenAsync();
 
-        public async Task<UserDto?> GetUserById(int id)
-        {
-            var user = await repository.GetUserById(id);
-            return user == null ? null : new UserDto
+                    using (var reader = await command.ExecuteReaderAsync())
+                    {
+                        while (await reader.ReadAsync())
+                        {
+                            users.Add(new User
+                            {
+                                Id = reader.GetInt32(0),
+                                Name = reader.GetString(1),
+                                Email = reader.GetString(2),
+                                Age = reader.GetInt32(3),
+                                Gender = reader.IsDBNull(4) ? null : reader.GetString(4),
+                                ContactNumber = reader.GetString(5)
+                            });
+                        }
+                    }
+                }
+                return new UserResponse<List<User>>(true, "Users retrieved successfully.", users);
+            }
+            catch (Exception ex)
             {
-                Id = user.Id,
-                Name = user.Name,
-                Email = user.Email,
-                Age = user.Age,
-                Gender = user.Gender,
-                ContactNumber = user.ContactNumber
-            };
+                return new UserResponse<List<User>>(false, $"Error retrieving users: {ex.Message}", null);
+            }
         }
 
-        public async Task AddUser(UserDto userDto)
+        public async Task<UserResponse<User>> GetUserById(int id)
         {
-            var user = new User
+            User user = null;
+
+            try
             {
-                Name = userDto.Name,
-                Email = userDto.Email,
-                Age = userDto.Age,
-                Gender = userDto.Gender,
-                ContactNumber = userDto.ContactNumber
-            };
-            await repository.AddUser(user);
-        }
+                using (var connection = new SqlConnection(connectionString))
+                using (var command = new SqlCommand("GetUserById", connection))
+                {
+                    command.CommandType = CommandType.StoredProcedure;
+                    command.Parameters.AddWithValue("@Id", id);
+                    await connection.OpenAsync();
 
-        public async Task UpdateUser(int id, UserDto userDto)
-        {
-            var user = new User
+                    using (var reader = await command.ExecuteReaderAsync())
+                    {
+                        if (await reader.ReadAsync())
+                        {
+                            user = new User
+                            {
+                                Id = reader.GetInt32(0),
+                                Name = reader.GetString(1),
+                                Email = reader.GetString(2),
+                                Age = reader.GetInt32(3),
+                                Gender = reader.IsDBNull(4) ? null : reader.GetString(4),
+                                ContactNumber = reader.GetString(5)
+                            };
+                        }
+                    }
+                }
+                if (user != null)
+                    return new UserResponse<User>(true, "User found.", user);
+                else
+                    return new UserResponse<User>(false, "User not found.", null);
+            }
+            catch (Exception ex)
             {
-                Id = id,
-                Name = userDto.Name,
-                Email = userDto.Email,
-                Age = userDto.Age,
-                Gender = userDto.Gender,
-                ContactNumber = userDto.ContactNumber
-            };
-            await repository.UpdateUser(user);
-        }
-
-        public async Task DeleteUser(int id)
-        {
-            await repository.DeleteUser(id);
+                return new UserResponse<User>(false, $"Error retrieving user: {ex.Message}", null);
+            }
         }
     }
 }

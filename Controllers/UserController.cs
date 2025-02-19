@@ -1,66 +1,34 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using System.Collections.Generic;
 using System.Threading.Tasks;
-using UserManagementAPI.DTOs;
+using UserManagementAPI.Models;
 using UserManagementAPI.Services;
+using System.Collections.Generic;
 
 namespace UserManagementAPI.Controllers
 {
-    [Route("api/users")]
     [ApiController]
+    [Route("api/users")]
     public class UserController : ControllerBase
     {
-        private readonly UserService service;
+        private readonly IUserService userService;
 
-        public UserController(UserService service)
+        public UserController(IUserService userService)
         {
-            this.service = service;
+            this.userService = userService;
         }
 
-        [HttpGet]
-        public async Task<ActionResult<List<UserDto>>> GetUsers()
+        [HttpGet("getall")]
+        public async Task<IActionResult> GetAllUsers()
         {
-            return Ok(await service.GetAllUsers());
+            var response = await userService.GetAllUsers();
+            return response.Success ? Ok(response) : BadRequest(response);
         }
 
-        [HttpGet("{id}")]
-        public async Task<ActionResult<UserDto>> GetUser(int id)
+        [HttpGet("get/{id}")]
+        public async Task<IActionResult> GetUserById(int id)
         {
-            var user = await service.GetUserById(id);
-            return user == null ? NotFound() : Ok(user);
-        }
-
-        [HttpPost]
-        public async Task<IActionResult> AddUser(UserDto userDto)
-        {
-            await service.AddUser(userDto);
-            return CreatedAtAction(nameof(GetUser), new { id = userDto.Id }, userDto);
-
-        }
-
-        [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateUser(int id, UserDto userDto)
-        {
-            var existingUser = await service.GetUserById(id);
-            if (existingUser == null)
-            {
-                return NotFound();  // Return 404 if user does not exist
-            }
-
-            await service.UpdateUser(id, userDto);
-            return NoContent();
-        }
-
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteUser(int id)
-        {
-            var existingUser = await service.GetUserById(id);
-            if (existingUser == null)
-            {
-                return NotFound();  
-            }
-            await service.DeleteUser(id);
-            return NoContent();
+            var response = await userService.GetUserById(id);
+            return response.Success ? Ok(response) : NotFound(response);
         }
     }
 }
