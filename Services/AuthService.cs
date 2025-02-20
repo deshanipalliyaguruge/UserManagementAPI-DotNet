@@ -66,7 +66,7 @@ namespace UserManagementAPI.Services
             }
         }
 
-       
+
 
         public async Task<ResponseResult<object>> ChangePassword(ChangePasswordRequest request)
         {
@@ -80,13 +80,21 @@ namespace UserManagementAPI.Services
                         command.Parameters.AddWithValue("@UserId", request.UserId);
                         command.Parameters.AddWithValue("@NewPasswordHash", HashPassword(request.NewPassword)); // Hash before storing
 
-                        await connection.OpenAsync();
-                        int rowsAffected = await command.ExecuteNonQueryAsync();
+                        SqlParameter outputParam = new SqlParameter("@ResultMessage", SqlDbType.NVarChar, 255)
+                        {
+                            Direction = ParameterDirection.Output
+                        };
+                        command.Parameters.Add(outputParam);
 
-                        if (rowsAffected > 0)
+                        await connection.OpenAsync();
+                        await command.ExecuteNonQueryAsync();
+
+                        string resultMessage = outputParam.Value.ToString();
+
+                        if (resultMessage == "Success")
                             return new ResponseResult<object>(true, "Password updated successfully.");
                         else
-                            return new ResponseResult<object>(false, "User not found.");
+                            return new ResponseResult<object>(false, resultMessage);
                     }
                 }
             }
@@ -95,6 +103,7 @@ namespace UserManagementAPI.Services
                 return new ResponseResult<object>(false, $"Error: {ex.Message}");
             }
         }
+
 
         private string HashPassword(string password)
         {
