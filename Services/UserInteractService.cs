@@ -43,7 +43,7 @@ namespace UserManagementAPI.Services
                         await connection.OpenAsync();
                         await command.ExecuteNonQueryAsync();
 
-                        return new ResponseResult<object>(true, $"User created successfully. Username: {userName}");
+                        return new ResponseResult<object>(true, $"User created successfully. Username: {userName} Password: {password}");
                     }
                 }
             }

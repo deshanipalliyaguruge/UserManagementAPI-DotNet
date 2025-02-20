@@ -12,11 +12,12 @@
             Message = message;
         }
 
-        public ResponseResult(bool success, string message, T data = default)
+        public ResponseResult(bool success, string message, T? data = default)
         {
             Success = success;
             Message = message;
             Data = data;
         }
+
     }
 }
