@@ -11,6 +11,7 @@ using UserManagementAPI.Models;
 using UserManagementAPI.Models.AuthModels;
 using System.Security.Cryptography;
 using System.Diagnostics;
+using UserManagementAPI.Utilities;
 
 
 namespace UserManagementAPI.Services
@@ -36,7 +37,7 @@ namespace UserManagementAPI.Services
                     {
                         command.CommandType = CommandType.StoredProcedure;
 
-                        string hashedPassword = HashPassword(loginRequest.Password);
+                        string hashedPassword = PasswordHasher.HashPassword(loginRequest.Password);
                         Console.WriteLine($"Hashed Password: {hashedPassword}");
 
                         command.Parameters.AddWithValue("@UserName", loginRequest.UserName);
@@ -78,7 +79,7 @@ namespace UserManagementAPI.Services
                     {
                         command.CommandType = CommandType.StoredProcedure;
                         command.Parameters.AddWithValue("@UserId", request.UserId);
-                        command.Parameters.AddWithValue("@NewPasswordHash", HashPassword(request.NewPassword)); // Hash before storing
+                        command.Parameters.AddWithValue("@NewPasswordHash", PasswordHasher.HashPassword(request.NewPassword)); // Hash before storing
 
                         SqlParameter outputParam = new SqlParameter("@ResultMessage", SqlDbType.NVarChar, 255)
                         {
@@ -103,22 +104,6 @@ namespace UserManagementAPI.Services
                 return new ResponseResult<object>(false, $"Error: {ex.Message}");
             }
         }
-
-
-        private string HashPassword(string password)
-        {
-            using (SHA256 sha256 = SHA256.Create())
-            {
-                byte[] bytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(password));
-                StringBuilder builder = new StringBuilder();
-                foreach (var b in bytes)
-                {
-                    builder.Append(b.ToString("x2"));
-                }
-                return builder.ToString();
-            }
-        }
-
 
         private string GenerateJwtToken(string username, int userId)
         {

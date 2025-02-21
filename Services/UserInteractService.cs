@@ -7,6 +7,8 @@ using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
 using UserManagementAPI.Models;
 using UserManagementAPI.Models.UserModels;
+using UserManagementAPI.Utilities;
+
 
 namespace UserManagementAPI.Services
 {
@@ -27,7 +29,7 @@ namespace UserManagementAPI.Services
             {
                 string userName = GenerateUserName(user.Name);
                 string password = GenerateRandomPassword();
-                string passwordHash = HashPassword(password);
+                string passwordHash = PasswordHasher.HashPassword(password);
 
                 using (SqlConnection connection = new SqlConnection(connectionString))
                 {
@@ -115,18 +117,5 @@ namespace UserManagementAPI.Services
             return new string(Enumerable.Repeat(chars, 8).Select(s => s[random.Next(s.Length)]).ToArray());
         }
 
-        private string HashPassword(string password)
-        {
-            using (SHA256 sha256 = SHA256.Create())
-            {
-                byte[] bytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(password));
-                StringBuilder builder = new StringBuilder();
-                foreach (var b in bytes)
-                {
-                    builder.Append(b.ToString("x2"));
-                }
-                return builder.ToString();
-            }
-        }
     }
 }
