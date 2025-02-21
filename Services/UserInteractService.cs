@@ -13,10 +13,12 @@ namespace UserManagementAPI.Services
     public class UserInteractService : IUserInteractService
     {
         private readonly string connectionString;
+        private readonly IEmailService emailService;
 
-        public UserInteractService(IConfiguration configuration)
+        public UserInteractService(IConfiguration configuration, IEmailService emailService)
         {
             this.connectionString = configuration.GetConnectionString("DefaultConnection");
+            this.emailService = emailService;
         }
 
         public async Task<ResponseResult<object>> CreateUser(User user)
@@ -42,6 +44,19 @@ namespace UserManagementAPI.Services
 
                         await connection.OpenAsync();
                         await command.ExecuteNonQueryAsync();
+
+                        // Send email
+                        string subject = "Welcome to Our System";
+                        string body = $"<p>Hello {user.Name},</p>" +
+                                      $"<p>Your account has been created successfully.</p>" +
+                                      $"<p>Username: <b>{userName}</b></p>" +
+                                      $"<p>Password: <b>{password}</b></p>" +
+                                      $"<p>Please change your password immediately.</p>";
+                        string email = user.Email;
+
+                        Console.WriteLine("Email sent to: " + user.Email);
+
+                        await emailService.SendEmailAsync(email, subject, body);
 
                         return new ResponseResult<object>(true, $"User created successfully. Username: {userName} Password: {password}");
                     }

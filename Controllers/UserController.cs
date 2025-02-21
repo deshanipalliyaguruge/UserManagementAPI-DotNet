@@ -3,11 +3,13 @@ using System.Threading.Tasks;
 using UserManagementAPI.Models;
 using UserManagementAPI.Services;
 using System.Collections.Generic;
+using Microsoft.AspNetCore.Authorization;
 
 namespace UserManagementAPI.Controllers
 {
     [ApiController]
     [Route("api/users")]
+    
     public class UserController : ControllerBase
     {
         private readonly IUserService userService;
@@ -16,7 +18,7 @@ namespace UserManagementAPI.Controllers
         {
             this.userService = userService;
         }
-
+        //[Authorize]
         [HttpGet("getall")]
         public async Task<IActionResult> GetAllUsers()
         {

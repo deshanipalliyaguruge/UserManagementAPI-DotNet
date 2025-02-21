@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 using UserManagementAPI.Models.UserModels;
 using UserManagementAPI.Services;
@@ -16,6 +17,7 @@ namespace UserManagementAPI.Controllers
             this.userService = userService;
         }
 
+        [Authorize]
         [HttpPost("create")]
         public async Task<IActionResult> CreateUser([FromBody] User user)
         {
