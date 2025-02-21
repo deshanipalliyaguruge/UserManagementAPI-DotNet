@@ -18,7 +18,7 @@ namespace UserManagementAPI.Controllers
         {
             this.userService = userService;
         }
-        //[Authorize]
+        [Authorize]
         [HttpGet("getall")]
         public async Task<IActionResult> GetAllUsers()
         {
@@ -26,6 +26,7 @@ namespace UserManagementAPI.Controllers
             return response.Success ? Ok(response) : BadRequest(response);
         }
 
+        [Authorize]
         [HttpGet("get/{id}")]
         public async Task<IActionResult> GetUserById(int id)
         {

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 using UserManagementAPI.Models.UserModels;
 using UserManagementAPI.Services;
@@ -16,6 +17,7 @@ namespace UserManagementAPI.Controllers
             _userUpdateService = userUpdateService;
         }
 
+        [Authorize]
         [HttpPut("update/{id}")]
         public async Task<IActionResult> UpdateUser(int id, [FromBody] User user)
         {

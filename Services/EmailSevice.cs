@@ -27,8 +27,8 @@ namespace UserManagementAPI.Services
             using (var client = new SmtpClient(smtpServer, smtpPort))
             {
                 client.Credentials = new NetworkCredential(senderEmail, senderPassword);
-                client.EnableSsl = true;  // 🔹 Ensure SSL is enabled
-                client.UseDefaultCredentials = false;  // 🔹 Disable default credentials
+                client.EnableSsl = true;  //  Ensure SSL is enabled
+                client.UseDefaultCredentials = false;  //  Disable default credentials
                 client.DeliveryMethod = SmtpDeliveryMethod.Network;
 
                 var mailMessage = new MailMessage

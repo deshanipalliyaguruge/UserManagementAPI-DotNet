@@ -25,6 +25,7 @@ namespace UserManagementAPI.Controllers
             return response.Success ? Ok(response) : BadRequest(response);
         }
 
+        [Authorize]
         [HttpDelete("delete/{id}")]
         public async Task<IActionResult> DeleteUser(int id)
         {
