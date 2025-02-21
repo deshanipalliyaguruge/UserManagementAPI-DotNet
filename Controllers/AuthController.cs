@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 using UserManagementAPI.Models.AuthModels;
 using UserManagementAPI.Services;
@@ -22,7 +23,7 @@ namespace UserManagementAPI.Controllers
             var response = await _authService.SignIn(loginRequest);
             return response.Success ? Ok(response) : Unauthorized(response);
         }
-
+        [Authorize]
         [HttpPost("change-password")]
         public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordRequest request)
         {

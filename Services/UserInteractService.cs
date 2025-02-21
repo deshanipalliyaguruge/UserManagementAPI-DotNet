@@ -58,7 +58,7 @@ namespace UserManagementAPI.Services
 
                         await emailService.SendEmailAsync(email, subject, body);
 
-                        return new ResponseResult<object>(true, $"User created successfully. Username: {userName} Password: {password}");
+                        return new ResponseResult<object>(true, $"User created successfully. Username: {userName}");
                     }
                 }
             }
